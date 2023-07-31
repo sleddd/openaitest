@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Document</title>
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", () => {
+            const btn = document.getElementById("btn");
+            btn.addEventListener('click', getResponse);   
+
+            async function getResponse() {                  
+                var inputText = document.getElementById("input").value;          
+                const parentDiv = document.getElementById("chat-area");
+
+                if(inputText === '') { return; }
+
+                const question = document.createElement('div');
+                question.innerHTML = inputText;
+                question.classList.add("box");
+                parentDiv.appendChild(question);
+
+                document.getElementById("input").value = '';
+
+                let res = await fetch('http://localhost:5000/chat', {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                    question: inputText          
+                    })
+                });
+
+                console.log(res);
+        
+                const data = await res.json();
+
+                if(data.message) {
+                    const answer = document.createElement('div');
+                    answer.innerHTML = data.message;
+                    answer.classList.add("box", "answer");
+                    parentDiv.appendChild(answer);
+                }
+                
+            }
+    });
+    </script>
+</head>
+<body>
+    <h1>Open AI API Test</h1>
+    <div id="chat-area">
+
+    </div>
+
+    <div class="submit-form">
+        <div class="input">
+            <textarea name="input" id="input" cols="40" rows="3"></textarea>
+            <button id="btn">Submit</button>
+        </div>    
+    </div>    
+ 
+</body>
+</html>
